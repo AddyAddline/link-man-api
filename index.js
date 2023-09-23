@@ -7,19 +7,22 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-const connectDB = async () => {
-	try {
-		const conn = await mongoose.connect(process.env.MONGO_URI);
-		console.log('MongoDB Connected');
-	} catch (error) {
-		console.log(error);
-		process.exit(1);
-	}
-};
+mongoose
+	.connect(process.env.MONGO_URI)
+	.then(() => {
+		console.log('Connected to MongoDB');
+	})
+	.catch((err) => {
+		console.log(err);
+	});
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/api', apiRouter);
+
+app.get('/ping', (req, res) => {
+	res.json({ message: 'pong' });
+});
 
 app.use((req, res) => {
 	res.status(404).json({ message: 'Invalid route' });
@@ -29,8 +32,6 @@ app.use((err, req, res, next) => {
 	res.status(500).json({ message: 'Internal server error' });
 });
 
-connectDB().then(() => {
-	app.listen(PORT, () => {
-		console.log('listening for requests');
-	});
+app.listen(PORT, () => {
+	console.log('Server is running on port ' + PORT);
 });
