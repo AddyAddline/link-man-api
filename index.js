@@ -7,31 +7,32 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+require('./cron/ping');
 mongoose
-	.connect(process.env.MONGO_URI)
-	.then(() => {
-		console.log('Connected to MongoDB');
-	})
-	.catch((err) => {
-		console.log(err);
-	});
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/api', apiRouter);
 
 app.get('/ping', (req, res) => {
-	res.json({ message: 'pong' });
+  res.json({ message: 'pong' });
 });
 
 app.use((req, res) => {
-	res.status(404).json({ message: 'Invalid route' });
+  res.status(404).json({ message: 'Invalid route' });
 });
 app.use((err, req, res, next) => {
-	console.log(err);
-	res.status(500).json({ message: 'Internal server error' });
+  console.log(err);
+  res.status(500).json({ message: 'Internal server error' });
 });
 
 app.listen(PORT, () => {
-	console.log('Server is running on port ' + PORT);
+  console.log('Server is running on port ' + PORT);
 });
